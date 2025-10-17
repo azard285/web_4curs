@@ -1,0 +1,18 @@
+dotnet ef database update
+dotnet run
+http://localhost:5073/swagger
+
+действия
+gotowork - пойти на работу
+
+contemplatenature - созерцать природу
+
+drinkwineandwatchseries - пить вино и смотреть сериалы
+
+gotobar - пойти в бар
+
+drinkwithmarginals - пить с маргиналами
+
+singinmetro - петь в метро
+
+sleep - спать

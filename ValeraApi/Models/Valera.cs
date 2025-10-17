@@ -4,13 +4,15 @@ namespace ValeraApi.Models
 {
     public class Valera
     {
-        public int Health { get; private set; }
-        public int Alcohol { get; private set; }
-        public int Joy { get; private set; }
-        public int Fatigue { get; private set; }
-        public decimal Money { get; private set; }
+        public int Id { get; set; }
+        public int Health { get; set; }
+        public int Alcohol { get; set; }
+        public int Joy { get; set; }
+        public int Fatigue { get; set; }
+        public decimal Money { get; set; }
 
-       
+        public Valera() { } // Пустой конструктор для EF
+
         public Valera(int health = 100, int alcohol = 0, int joy = 0, int fatigue = 0, decimal money = 0)
         {
             Health = health;
@@ -18,7 +20,7 @@ namespace ValeraApi.Models
             Joy = joy;
             Fatigue = fatigue;
             Money = money;
-            ClampValues(); 
+            ClampValues();
         }
 
         private void ClampValues()
@@ -30,7 +32,6 @@ namespace ValeraApi.Models
             if (Money < 0) Money = 0;
         }
 
-       
         public bool GoToWork()
         {
             if (Alcohol >= 50 || Fatigue >= 10)
