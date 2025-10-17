@@ -1,0 +1,6 @@
+@ValeraApi_HostAddress = http://localhost:5073
+
+GET {{ValeraApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
