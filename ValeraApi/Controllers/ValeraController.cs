@@ -28,7 +28,7 @@ namespace ValeraApi.Controllers
             var valera = await _valeraService.GetValeraByIdAsync(id);
             if (valera == null)
             {
-                return NotFound();
+                return NotFound($"Valera with id {id} not found");
             }
             return Ok(valera);
         }
@@ -46,7 +46,7 @@ namespace ValeraApi.Controllers
             var valera = await _valeraService.UpdateValeraAsync(id, updateValeraDto);
             if (valera == null)
             {
-                return NotFound();
+                return NotFound($"Valera with id {id} not found");
             }
             return Ok(valera);
         }
@@ -57,20 +57,20 @@ namespace ValeraApi.Controllers
             var result = await _valeraService.DeleteValeraAsync(id);
             if (!result)
             {
-                return NotFound();
+                return NotFound($"Valera with id {id} not found");
             }
             return NoContent();
         }
 
-        [HttpPost("{id}/actions/{action}")]
-        public async Task<ActionResult<ValeraDto>> ExecuteAction(int id, string action)
+       [HttpPost("{id}/actions")]
+        public async Task<ActionResult<ValeraDto>> ExecuteAction(int id, [FromBody] string action)
         {
             var valera = await _valeraService.ExecuteActionAsync(id, action);
             if (valera == null)
             {
-                return NotFound();
+                return NotFound($"Valera with id {id} not found or action '{action}' is invalid");
             }
             return Ok(valera);
-        }
+        }   
     }
 }
