@@ -10,8 +10,12 @@ namespace ValeraApi.Models
         public int Joy { get; set; }
         public int Fatigue { get; set; }
         public decimal Money { get; set; }
+        
+        // Добавляем связь с пользователем
+        public int UserId { get; set; }
+        public User? User { get; set; } // Делаем nullable
 
-        public Valera() { } // Пустой конструктор для EF
+        public Valera() { }
 
         public Valera(int health = 100, int alcohol = 0, int joy = 0, int fatigue = 0, decimal money = 0)
         {
@@ -119,3 +123,4 @@ namespace ValeraApi.Models
         }
     }
 }
+

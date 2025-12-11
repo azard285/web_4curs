@@ -1,4 +1,6 @@
-import axios from 'axios';//библиотека для всех HTTP запросов
+// valera-react-app/src/services/valeraApi.jsx
+import axios from 'axios';
+import { authApi } from './authApi';
 
 const API_BASE_URL = 'http://localhost:5073/api/valera';
 
@@ -6,10 +8,54 @@ const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
+// Интерцептор для добавления токена
+api.interceptors.request.use(
+  (config) => {
+    const token = authApi.getToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Интерцептор для обработки ошибок аутентификации
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      authApi.logout();
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const valeraApi = {
-  // Получить всех Валер
+  getValeras: async (alcohol = 0) => {
+    const user = authApi.getCurrentUser(); // Получаем данные текущего пользователя
+    let endpoint = '/my'; // По умолчанию для пользователя
+
+    if (user && user.role === 'Admin') {
+      endpoint = ''; // Для админа используем корневой эндпоинт
+    }
+
+    const response = await api.get(`${endpoint}?alcohol=${alcohol}`);
+    return response.data;
+  },
+
+  // Получить всех Валер (только для админа)
   getAllValeras: async (alcohol = 0) => {
     const response = await api.get(`?alcohol=${alcohol}`);
+    return response.data;
+  },
+
+  // Получить моих Валер
+  getMyValeras: async (alcohol = 0) => {
+    const response = await api.get(`/my?alcohol=${alcohol}`);
     return response.data;
   },
 
@@ -27,15 +73,14 @@ export const valeraApi = {
 
   // Выполнить действие с Валерей
   executeAction: async (id, action) => {
-    // Маппинг действий на правильные названия для backend
     const actionMap = {
-      [ACTIONS.WORK]: "GoToWork",
-      [ACTIONS.CONTEMPLATE_NATURE]: "ContemplateNature", 
-      [ACTIONS.DRINK_WINE]: "DrinkWineAndWatchSeries",
-      [ACTIONS.GO_TO_BAR]: "GoToBar",
-      [ACTIONS.DRINK_WITH_MARGINALS]: "DrinkWithMarginals",
-      [ACTIONS.SING_IN_METRO]: "SingInMetro", 
-      [ACTIONS.SLEEP]: "Sleep"
+      work: "GoToWork",
+      contemplate_nature: "ContemplateNature", 
+      drink_wine: "DrinkWineAndWatchSeries",
+      go_to_bar: "GoToBar",
+      drink_with_marginals: "DrinkWithMarginals",
+      sing_in_metro: "SingInMetro", 
+      sleep: "Sleep"
     };
     
     const backendAction = actionMap[action];
@@ -54,10 +99,15 @@ export const valeraApi = {
   // Удалить Валеру
   deleteValera: async (id) => {
     await api.delete(`/${id}`);
+  },
+
+  // Проверка прав админа
+  isAdmin: () => {
+    const user = authApi.getCurrentUser();
+    return user?.role === 'Admin';
   }
 };
 
-// Список доступных действий (остается как было)
 export const ACTIONS = {
   WORK: 'work',
   CONTEMPLATE_NATURE: 'contemplate_nature',

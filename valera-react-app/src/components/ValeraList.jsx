@@ -13,7 +13,7 @@ const ValeraList = ({ onValeraSelect }) => {
     try {
       setLoading(true);
       setError('');
-      const data = await valeraApi.getAllValeras();
+      const data = await valeraApi.getValeras();
       setValeras(data);
     } catch (err) {
       setError('Ошибка загрузки Валер: ' + (err.response?.data || err.message));
