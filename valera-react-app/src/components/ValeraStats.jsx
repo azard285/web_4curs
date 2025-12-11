@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { valeraApi, ACTIONS, ACTION_LABELS } from '../services/valeraApi';
 
-const ValeraStats = ({ valeraId, onBack }) => {
+const ValeraStats = ({ user }) => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  
   const [valera, setValera] = useState(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -11,7 +15,7 @@ const ValeraStats = ({ valeraId, onBack }) => {
     try {
       setLoading(true);
       setError('');
-      const data = await valeraApi.getValeraById(valeraId);
+      const data = await valeraApi.getValeraById(id);
       setValera(data);
     } catch (err) {
       setError('Ошибка загрузки Валеры: ' + (err.response?.data || err.message));
@@ -20,19 +24,27 @@ const ValeraStats = ({ valeraId, onBack }) => {
     }
   };
 
-  useEffect(() => {// Загрузка данных Валеры при изменении valeraId
-    if (valeraId) {
+  useEffect(() => {
+    if (id) {
       loadValera();
     }
-  }, [valeraId]);
+  }, [id]);
 
-  const handleAction = async (action) => { //Обработка действий
+  const handleBack = () => {
+    navigate('/valeras');
+  };
+
+  const handleAction = async (action) => {
+    console.log('🚀 Executing action:', action, 'for valera ID:', id);
+    
     try {
       setActionLoading(true);
       setError('');
-      const updatedValera = await valeraApi.executeAction(valeraId, action);
+      const updatedValera = await valeraApi.executeAction(id, action);
+      console.log('✅ Action successful:', updatedValera);
       setValera(updatedValera);
     } catch (err) {
+      console.error('❌ Action failed:', err);
       setError('Ошибка выполнения действия: ' + (err.response?.data || err.message));
     } finally {
       setActionLoading(false);
@@ -65,7 +77,7 @@ const ValeraStats = ({ valeraId, onBack }) => {
 
   return (
     <div className="container">
-      <button onClick={onBack} className="btn-back">← Назад к списку</button>
+      <button onClick={handleBack} className="btn-back">← Назад к списку</button>
       
       <h1>Управление Валера #{valera.id}</h1>
       

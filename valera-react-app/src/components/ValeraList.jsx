@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Добавляем этот хук
 import { valeraApi } from '../services/valeraApi';
 import CreateValeraModal from './CreateValeraModal';
 
-const ValeraList = ({ onValeraSelect }) => {
-  const [valeras, setValeras] = useState([]);// Список Валер
-  const [searchId, setSearchId] = useState('');// Поисковый запрос
-  const [isModalOpen, setIsModalOpen] = useState(false);// Открыта ли модалка
-  const [loading, setLoading] = useState(false);// Загрузка данных
-  const [error, setError] = useState('');// Ошибки
+const ValeraList = ({ user }) => { // Получаем user вместо onValeraSelect
+  const [valeras, setValeras] = useState([]);
+  const [searchId, setSearchId] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  
+  const navigate = useNavigate(); // Хук для навигации
 
   const loadValeras = async () => {
     try {
       setLoading(true);
       setError('');
-      const data = await valeraApi.getValeras();
+      const data = await valeraApi.getValeras(); // Используем исправленный метод
       setValeras(data);
     } catch (err) {
       setError('Ошибка загрузки Валер: ' + (err.response?.data || err.message));
@@ -31,10 +34,15 @@ const ValeraList = ({ onValeraSelect }) => {
     try {
       await valeraApi.createValera(valeraData);
       setIsModalOpen(false);
-      await loadValeras(); // Перезагружаем список
+      await loadValeras();
     } catch (err) {
       setError('Ошибка создания Валеры: ' + (err.response?.data || err.message));
     }
+  };
+
+  // Функция перехода к деталям Валеры
+  const handleValeraClick = (valeraId) => {
+    navigate(`/valeras/${valeraId}`);
   };
 
   const filteredValeras = valeras.filter(valera =>
@@ -44,6 +52,13 @@ const ValeraList = ({ onValeraSelect }) => {
   return (
     <div className="container">
       <h1>🤪🤤🍻 Бухарик Валера</h1>
+      
+      {/* Показываем информацию о пользователе */}
+      {user && (
+        <div className="user-info">
+          <p>👤 {user.username} ({user.role})</p>
+        </div>
+      )}
       
       <div className="controls">
         <input
@@ -75,7 +90,7 @@ const ValeraList = ({ onValeraSelect }) => {
             <div 
               key={valera.id} 
               className="valera-card"
-              onClick={() => onValeraSelect(valera.id)}
+              onClick={() => handleValeraClick(valera.id)} // Изменено здесь
             >
               <h3>Валера #{valera.id}</h3>
               <div className="stats-preview">
