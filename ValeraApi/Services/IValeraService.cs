@@ -5,7 +5,7 @@ namespace ValeraApi.Services
 {
     public interface IValeraService
     {
-        Task<List<ValeraDto>> GetAllValerasAsync();
+        Task<List<ValeraDto>> GetAllValerasAsync(int alcohol);
         Task<ValeraDto?> GetValeraByIdAsync(int id);
         Task<ValeraDto> CreateValeraAsync(CreateValeraDto createValeraDto);
         Task<ValeraDto?> UpdateValeraAsync(int id, UpdateValeraDto updateValeraDto);

@@ -16,9 +16,9 @@ namespace ValeraApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<ValeraDto>>> GetAllValeras()
+        public async Task<ActionResult<List<ValeraDto>>> GetAllValeras(int alcohol)
         {
-            var valeras = await _valeraService.GetAllValerasAsync();
+            var valeras = await _valeraService.GetAllValerasAsync( alcohol);
             return Ok(valeras);
         }
 

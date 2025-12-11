@@ -14,9 +14,12 @@ namespace ValeraApi.Services
             _context = context;
         }
 
-        public async Task<List<ValeraDto>> GetAllValerasAsync()
+        public async Task<List<ValeraDto>> GetAllValerasAsync(int alcohol)
         {
-            var valeras = await _context.Valeras.ToListAsync();
+            var valeras = await _context.Valeras
+            .Where(v => v.Alcohol <= alcohol)
+            .ToListAsync();
+
             return valeras.Select(v => MapToDto(v)).ToList();
         }
 
@@ -47,7 +50,7 @@ namespace ValeraApi.Services
             var valera = await _context.Valeras.FindAsync(id);
             if (valera == null) return null;
 
-            // Создаем нового Валеру с обновленными значениями
+            //создаем нового алкаша с обновленными значениями
             var updatedValera = new Valera(
                 updateValeraDto.Health,
                 updateValeraDto.Alcohol,
@@ -56,10 +59,10 @@ namespace ValeraApi.Services
                 updateValeraDto.Money
             )
             {
-                Id = id // Сохраняем тот же ID
+                Id = id //cохраняем тот же айди
             };
 
-            // Обновляем сущность в контексте
+            // обновляем сущность в контексте
             _context.Entry(valera).CurrentValues.SetValues(updatedValera);
             await _context.SaveChangesAsync();
 
@@ -113,7 +116,7 @@ namespace ValeraApi.Services
 
             if (!success && action.ToLower() == "gotowork")
             {
-                return null; // Не удалось пойти на работу
+                return null;
             }
 
             await _context.SaveChangesAsync();
